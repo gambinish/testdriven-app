@@ -18,6 +18,17 @@ class UsersPing(Resource):
     }
 
 class UsersList(Resource):
+
+    def get(self):
+        """Get All Users"""
+        response_object = {
+            'status': 'success',
+            'data': {
+                'users': [user.to_json() for user in User.query.all()]
+            }
+        }
+        return response_object, 200
+
     def post(self):
         post_data = request.get_json()
         response_object = {
@@ -43,5 +54,33 @@ class UsersList(Resource):
             db.session.rollback()
             return response_object, 400
 
+
+class Users(Resource):
+    def get(self, user_id):
+        """Get single user details"""
+        response_object = {
+            'status': 'fail',
+            'message': 'User does not exist.'
+        }
+        try:
+            user = User.query.filter_by(id=int(user_id)).first()
+            if not user:
+                return response_object, 404
+            else:
+                response_object = {
+                    'status': 'success',
+                    'data': {
+                        'id': user.id,
+                        'username': user.username,
+                        'email': user.email,
+                        'active': user.active
+                    }
+                }
+                return response_object, 200
+        except ValueError:
+            return response_object, 404
+
+
 api.add_resource(UsersPing, '/users/ping')
 api.add_resource(UsersList, '/users')
+api.add_resource(Users, f'/users/<user_id>')

@@ -14,9 +14,10 @@ api = Api(users_blueprint)
 class UsersPing(Resource):
     def get(self):
         return {
-        'status': 'success',
-        'message': 'pong!'
-    }
+            'status': 'success',
+            'message': 'pong!'
+        }
+
 
 class UsersList(Resource):
 
@@ -80,6 +81,7 @@ class Users(Resource):
                 return response_object, 200
         except ValueError:
             return response_object, 404
+
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():

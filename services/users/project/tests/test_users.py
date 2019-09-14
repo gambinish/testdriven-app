@@ -163,10 +163,11 @@ class TestUserService(BaseTestCase):
                 follow_redirects = True
             )
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(b'All Users', response.data)
-            self.assertNotIn(b'<p>No users!</p>')
-            self.assertIn('user3', response.data)
+            self.assertIn(b'All Users', response.data)
+            self.assertNotIn(b'<p>No users!</p>', response.data)
+            self.assertIn(b'user3', response.data)
 
 
 if __name__ == '__main__':
     unittest.main()
+    

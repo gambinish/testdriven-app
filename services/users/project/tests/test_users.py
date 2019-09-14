@@ -5,11 +5,13 @@ from project.tests.base import BaseTestCase
 from project.api.models import User
 from project import db
 
+
 def add_user(username, email):
     user = User(username=username, email=email)
     db.session.add(user)
     db.session.commit()
     return user
+
 
 class TestUserService(BaseTestCase):
     """Tests for the Users Service."""
@@ -43,8 +45,8 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/users',
-                data = json.dumps({}),
-                content_type = "application/json",
+                data=json.dumps({}),
+                content_type="application/json",
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
@@ -52,12 +54,12 @@ class TestUserService(BaseTestCase):
             self.assertIn('fail', data['status'])
 
     def test_add_user_invalid_json_keys(self):
-        """Ensure error is thrown if the JSON object does not have a username key"""
+        """If the JSON object does not have a username key"""
         with self.client:
             response = self.client.post(
                 '/users',
-                data = json.dumps({'email': 'tester@test.com'}),
-                content_type = 'application/json',
+                data=json.dumps({'email': 'tester@test.com'}),
+                content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
@@ -69,25 +71,25 @@ class TestUserService(BaseTestCase):
         with self.client:
             self.client.post(
                 '/users',
-                data = json.dumps({
+                data=json.dumps({
                     'username': 'tester',
                     'email': 'tester@test.com'
                 }),
-                content_type = "application/json",
+                content_type="application/json",
             )
             response = self.client.post(
                 '/users',
-                data = json.dumps({
+                data=json.dumps({
                     'username': 'tester',
                     'email': 'tester@test.com'
                 }),
-                content_type = "application/json",
+                content_type="application/json",
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
             self.assertIn('Sorry. That email already exists.', data['message'])
             self.assertIn('fail', data['status'])
-    
+
     def test_single_user(self):
         """Ensure get single user behaves correctly"""
         user = add_user('tester', 'tester@test.com')
@@ -133,14 +135,14 @@ class TestUserService(BaseTestCase):
             self.assertIn('success', data['status'])
 
     def test_main_no_users(self):
-        """Ensure the main route behaves correctly when no users have been added to the database"""
+        """When no users have been added to the database"""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'All Users', response.data)
         self.assertIn(b'<p>No users!</p>', response.data)
 
     def test_main_with_users(self):
-        """Ensure the main route behaves correctly when suers have been added to the database."""
+        """When users have been added to the database."""
         add_user('user1', 'user1@test.com')
         add_user('user2', 'user2@test.com')
         with self.client:
@@ -156,11 +158,11 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/',
-                data = dict(
-                    username = 'user3',
-                    email = 'user3@test.com'
+                data=dict(
+                    username='user3',
+                    email='user3@test.com'
                 ),
-                follow_redirects = True
+                follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'All Users', response.data)
@@ -170,4 +172,3 @@ class TestUserService(BaseTestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
